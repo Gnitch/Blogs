@@ -1,0 +1,73 @@
+h1 {
+    font-family: 'Italianno', cursive;
+    font-weight: normal;
+    font-size: 100px;
+    text-align: center;
+    margin: 10px;
+}
+.container {
+    background-color: 	black;
+    /* color: white; */
+    color: #F8F8F8;
+    padding: 20px;
+    border-radius: 30px;
+}
+
+.btn-dark {
+    width: 60%;
+    margin-top: 10px;
+    border-radius: 25px;
+}
+
+.btn-secondary {
+    width: 39%;
+    margin-top: 10px;
+    border-radius: 25px;
+}
+
+.form-custom {
+    background-color: #F8F8F8;
+    margin-bottom: 10px;
+    border: none;
+    border-bottom: 1px solid white;
+    border-radius: 0%;
+}
+
+.p {
+    font-size: 20px;
+    font-family: 'Philosopher', sans-serif; 
+}
+
+.status {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.badge-info {
+    width: fit-content;
+    padding: 8px;
+}
+
+body {
+    padding: 10px;
+    font-size: 20px;
+    font-family: 'Philosopher', sans-serif; 
+}
+
+img {
+    width: 250px;
+    border-radius: 180px;
+    height: 250px;
+}
+
+.edit {
+    margin-top: 10px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 18px;
+    color: lightblue;
+}
+
+
+
+
+
+

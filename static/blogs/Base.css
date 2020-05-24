@@ -1,0 +1,35 @@
+body {
+    background-color: #3f3f3f !important;
+}
+
+.navbar {
+    font-family: 'Philosopher', sans-serif; 
+    margin: 20px;
+    border-radius: 30px;
+    font-size: 20px;
+}
+
+p.nav_link {
+    margin: 0px;
+}
+
+#home {
+    font-size: 23px;
+}
+
+.search input {
+    color: #F8F8F8;
+    background-image: url("https://img.icons8.com/ios-glyphs/20/000000/search.png");
+    background-position: 10px 10px; 
+    background-repeat: no-repeat;
+    background-color: 	#F8F8F8;
+    padding: 12px 20px 12px 40px;
+    border: none;
+    border-radius: 0px;    
+    border-bottom: 1px solid gray;
+    overflow: hidden;
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+

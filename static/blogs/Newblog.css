@@ -1,0 +1,70 @@
+h1 {
+    font-family: 'Italianno', cursive;
+    font-weight: normal;
+    font-size: 100px;
+    text-align: center;
+    margin: 10px;
+}
+
+.container {
+    background-color: 	black;
+    color: #F8F8F8;
+    padding: 20px;
+    border-radius: 30px;
+}
+
+.btn-light {
+    width: 60%;
+    margin-top: 10px;
+    border-radius: 25px;
+}
+
+.btn-secondary {
+    width: 39%;
+    margin-top: 10px;
+    border-radius: 25px;
+}
+
+textarea {
+    background-color: gray;
+    color: white;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: lightgray;
+    opacity: 1; /* Firefox */
+}
+
+
+.form-custom {
+    color: white;
+    background-color: black;
+    margin-bottom: 10px;
+    border: none;
+    border-bottom: 1px solid white;
+    border-radius: 0%;
+}
+
+#hint_id_body {
+    font-size: 15px;
+}
+
+label {
+    font-size: 20px;
+}
+
+body {
+    padding: 10px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.form-text {
+    color: white !important; 
+}
+
+small {
+    color: white !important;
+}
+
+
+

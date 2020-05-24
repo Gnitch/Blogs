@@ -1,0 +1,39 @@
+.row {
+    background-color: black;
+    color: white;
+    margin-bottom: 30px;
+    font-size: 30px;
+    font-family: 'Courgette', cursive;
+    padding: 20px;
+    box-shadow:5px 5px 5px #888888;
+    display: block;
+    border-radius: 10px;
+}
+
+hr {
+    border-top: 1px solid #888888;
+    margin-top: 10px;
+}
+
+i {
+    text-align: center;
+    margin: 10px;
+}
+
+
+.fa-bookmark {
+    float: right;
+    color: #888888 ;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+.save {
+    color: white !important;
+}

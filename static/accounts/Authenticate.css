@@ -1,0 +1,124 @@
+body {
+  margin-top: 60px;
+}
+
+.message {
+  color: red;
+  font-size: 20px;
+}
+
+.image-div {
+    float: left;
+    width: fit-content;
+}
+
+.main {
+  height: 800px;
+}
+
+a :hover {
+  text-decoration: none;  
+}
+
+.form-div { 
+    padding-bottom : 30px;
+    background-color: white;
+    border-radius: 20px;
+    max-width: 520px;
+    text-align: left;
+    margin: auto;
+}
+
+body {
+    background-color: #3f3f3f;
+}
+
+h1 {
+    text-align: center;
+    margin: 10px;
+    font-family: 'Italianno', cursive;
+    font-weight: normal;
+    font-size: 100px;
+}
+
+.btn {
+    padding: 5px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 40px;
+    width: 60%;
+
+}
+
+.form-custom {
+  margin: auto;
+  border-radius: 0%;
+  border: none;
+  border-bottom: 2px solid gray; 
+  width: 80%;
+  }
+
+
+p {
+    margin: 0px;
+}
+.link {
+  margin-bottom: 20px;
+  color: blue;
+}
+
+
+/* Google sign in button */
+
+.google-btn {
+  margin: auto;
+  width: 192px;
+  height: 42px;
+  background-color: #4285f4;
+  border-radius: 2px;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,.25);
+ }    
+    .google-icon-wrapper {
+    position: absolute;
+    margin-top: 1px;
+    margin-left: 1px;
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    background-color: #fff;
+  }
+  .google-icon {
+    position: absolute;
+    margin-top: 11px;
+    margin-left: 11px;
+    width: 18px;
+    height: 18px;
+  }
+  .btn-text {
+    text-align: center;
+    float: right;
+    margin: 11px 11px 0 0;
+    color: #fff;
+    font-size: 14px;
+    letter-spacing: 0.2px;
+    /* font-family: "Roboto"; */
+  }
+  .google-btn:hover { 
+    box-shadow: 0 0 6px #4285f4;
+  }
+  .google-btn :active {
+    background:  #1669F2;
+  } 
+/* End */
+
+
+.reset {
+  color: #4285f4;
+  margin-bottom: 0px;
+  margin-right: 60px;
+}
+
+.invalid-feedback {
+  text-align: center;
+}
+

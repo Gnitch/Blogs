@@ -1,0 +1,101 @@
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+    background-color: #3f3f3f;
+    color: white !important;
+    padding: 10px;
+}
+
+html {
+    background-color: #3f3f3f;
+}
+
+.container {
+    margin-top: 20px;
+    width: 85%;
+    padding: 10px;
+    background-color: black;
+}
+
+hr {
+    border-top: 1px solid #888888;
+    margin-top: 10px;
+}
+
+.comments {
+    height: 600px;
+    background-color: #888888;
+    overflow: scroll;
+}
+
+.fa-bookmark {
+    float: right !important;
+    color: #888888 ;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+.save {
+    color: white !important;
+}
+
+.title {
+    color: white;
+    font-size: 30px;
+    width: 100%;
+    text-align: center;
+}
+
+p {
+    word-wrap: break-word !important;
+}
+
+.body {
+    color: white;
+    font-size: 20px;
+    text-align: center;
+}
+
+.fa-ellipsis-v {
+    color: white;
+    float: right !important;
+    text-align: right !important;
+}
+
+.icon {
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.slide {
+    width: 100%;
+    height: 80%;
+    margin-bottom: 20px;
+}
+
+.row {
+    margin: 10px;
+    background-color: black;
+}
+
+.profile_img {
+    border: 2px solid gray;
+    margin-right: 10px;
+}
+
+.username {
+    font-size: 30px;
+    color: white;
+    width: 100%;
+}
+
+.youtube {
+    align-items: center;
+    margin: auto;
+}
+

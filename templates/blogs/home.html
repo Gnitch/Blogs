@@ -1,0 +1,22 @@
+{% extends 'blogs/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    {% block cssfile %}
+        <link rel="stylesheet" href="{% static 'blogs/home.css' %}">
+        <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
+        <script src="{% static 'blogs/home.js' %}"></script>
+    {% endblock %}
+</head>
+<body>
+    {% block content %}
+    <div class="container">
+        <div class="row">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dignissimos et tempore accusamus aspernatur illum non?<br> <hr class="line"> <i class="fas fa-thumbs-up" onclick="upvote('1','2')"  id="1"></i>  <i class="fas fa-thumbs-down" onclick="downvote('2','1')" id="2" ></i>  <i class="fas fa-comments"></i>   <i class="fas fa-bookmark"  onclick="save('3')" id="3"></i>  </div>
+    </div>
+    {% endblock content %}
+</body>
+</html>

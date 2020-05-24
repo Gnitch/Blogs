@@ -1,0 +1,90 @@
+{% load socialaccount %}
+{% providers_media_js %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Italianno&display=swap" rel="stylesheet">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="MY_CLIENT_ID_ON_GOOGLE_DEV.apps.googleusercontent.com">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'accounts/Authenticate.css' %}">
+    <title>User-Authentication</title>
+</head>
+<body>
+    
+  {% if user.is_authenticated %}
+    <meta http-equiv = "refresh" content = " 0; url = {% url 'blogs:getData' user.id %} " />
+  {% endif %}
+
+    <div class="container mb-5"> 
+        <div class="image-div d-none d-lg-block  ">
+          <img src="{% static 'Images/megumin.png' %} " height="400" width="200">
+        </div>
+        
+        <div class="form-div ">
+          {% if type_form == 'login' %}
+            <h1>Login</h1>
+          {% else %}
+            <h1>Register</h1>
+          {% endif %}
+          {% load crispy_forms_tags %}
+
+          <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            
+            {% if type_form == 'login' %}
+             
+              <div class="text-right"> 
+                <a href="{% url 'accounts:pass_reset' %}"> <p class="reset">Reset Password</p> </a>  
+              </div>
+              <div class="text-center">
+                <p class="message"> {{message}} </p>
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+
+              <div class="text-center"> 
+                <p>Don't have account?<a href="{% url 'accounts:user_signup' %}"> <p class="link">Sign up here</p> </a> </p>  
+              </div>
+
+              {% else %}
+
+              <p class="message"> {{message}} </p>
+              <div class="text-center"> 
+                  <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+              {% endif %}
+            
+              <a href="{% provider_login_url 'google' %}"> 
+
+                <div class="google-btn">
+                  <div class="google-icon-wrapper">
+                    <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"/>
+                  </div>
+                  <p class="btn-text"><b>Sign in with google</b></p>
+                </div>
+              </a> 
+          </form>
+
+        </div>
+
+
+          <a href="https://icons8.com/icon/17949/google"></a>
+
+    </div>
+    
+    
+    
+    <a href="https://icons8.com/icon/17949/google"></a>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>
