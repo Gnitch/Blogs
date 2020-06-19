@@ -1,0 +1,47 @@
+.row {
+    background-color: black;
+    color: white;
+    margin-bottom: 30px;
+    font-family: 'Courgette', cursive;
+    padding: 20px;
+    /* box-shadow:5px 5px 5px #888888; */
+    display: block;
+    border-radius: 10px;
+}
+
+html {
+    margin: 10px;
+}
+
+h2 {
+    font-size: 40px;
+}
+
+.community{
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 45px;
+    width: 100%;    
+}
+
+.username {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 35px;
+    color: white;
+    width: 100%;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+hr {
+    border-top: 1px solid #888888;
+    margin-top: 10px;
+}
+
+i {
+    text-align: center;
+    margin: 10px;
+}
+

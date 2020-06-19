@@ -21,46 +21,24 @@
             {% if type == 'edit' %}
                 <form method="POST" enctype="multipart/form-data" class="text-center"> 
                     {% csrf_token %}
-                    {{ form|crispy }}
-                    <button type="submit" value="submit" class="btn btn-dark text-center">Save</button>
+                    {{ form1|crispy }}
+                    {{ form2|crispy }}
+                    <button type="submit" value="submit" class="btn btn-light text-center">Save</button>
                 </form> 
 
-
-                <script> 
-
-                    id_cover = doc
-
-                    Filevalidation = () => { 
-                        const fi = document.getElementById('id_cover'); 
-                        // Check if any file is selected. 
-                        if (fi.files.length > 0) { 
-                            for (const i = 0; i <= fi.files.length - 1; i++) { 
-                  
-                                const fsize = fi.files.item(i).size; 
-                                const file = Math.round((fsize / 1024)); 
-                                // The size of the file. 
-                                if (file >= 2096) { 
-                                    alert( 
-                                      "File too Big, please select a file less than 4mb"); 
-                                } else if (file < 2048) { 
-                                    alert( 
-                                      "File too small, please select a file greater than 2mb"); 
-                                } 
-                            } 
-                        } 
-                    } 
-                </script> 
-
-
             {% else %}
-                <img src="{{ profile_obj.cover.url }} "  alt="">
-                <p class="edit"><a href="{% url 'blogs:Editprofile' %}"> <i class="fas fa-edit"></i>Edit profile</a></p>
+                {% if profile_obj.cover %}
+                    <img src="{{ profile_obj.cover.url }} "  alt="">
+                {% endif %}
+                {% if edit == True %}
+                    <p class="edit"><a href="{% url 'blogs:Editprofile' %}"> <i class="fas fa-edit"></i>Edit profile</a></p>
+                {% endif %}
                 <p class="p">Username : {{  user.username }} </p>
                 <p class="p">Email : {{ user.email }}</p>
                 Status : <a href="" class="badge badge-info status">{{ profile_obj.status }}</a>
             {% endif %}
         </div>
-        <script src="{% static 'blogs/Newblog&profile.js' %}"></script>
+        <script src="{% static 'blogs/NewblogProfile.js' %}"></script>
     {% endblock content %}
 
 </body>

@@ -22,35 +22,26 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item ">
-              <a class="nav-link" href="#"> <p class="nav_link">My blogs</p><span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="{% url 'blogs:myBlogs' %}"> <p class="nav_link">My blogs</p><span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item ">
               <a class="nav-link" href="{% url 'blogs:newBlog' %}"> <p class="nav_link">New Blog</p><span class="sr-only">(current)</span> </a>
             </li>
 
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Order by
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="#">Upvotes</a>
-                    <a class="dropdown-item" href="#">Downvotes</a>
-                    <a class="dropdown-item" href="#">Oldest</a>
-                    <a class="dropdown-item" href="#">Newest</a>
-                </div>
-                </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'blogs:communityList' %}"> <p class="nav_link">Communities</p><span class="sr-only">(current)</span> </a>
+            </li>
 
-                <li class="nav-item">
-                  <div class="form-inline search ">
-                    <form method="GET" action="#">
-                      <input class="form-control " type="search" autocomplete="off" placeholder="Search" aria-label="Search" name="q">
-                    </form>
-                  </div>
-                </li>
-
+            <li class="nav-item">
+              <div class="form-inline search ">
+                <form method="GET" action="{% url 'blogs:search' %}">
+                  <input class="form-control " type="search" autocomplete="off" placeholder="Search posts by title" aria-label="Search" name="q">
+                </form>
+              </div>
+            </li>
 
             <li class="nav-item ">
-                <a class="nav-link" href=#> <p class="nav_link">Contact</p><span class="sr-only">(current)</span> </a>
+                <a class="nav-link" href="{% url 'blogs:contact' %}"> <p class="nav_link">Contact</p><span class="sr-only">(current)</span> </a>
             </li>
           </ul>
 

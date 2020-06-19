@@ -1,0 +1,18 @@
+{% block content %}
+
+
+{% if community_list %}
+{% for each in community_list %}
+    <a href="{% url 'blogs:communityPosts' each.id %}"><button class="btn btn-outline-info m-1">{{each.community}}</button></a>
+{% endfor %}
+{% else %}
+<h1 style="color: white;">No Communities Found</h1>
+{% endif %}
+
+
+
+{% endblock content %}
+
+
+
+

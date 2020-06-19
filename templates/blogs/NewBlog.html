@@ -19,12 +19,18 @@
         <h1>New Blog</h1>
         <form method="POST" enctype="multipart/form-data" >
             {% csrf_token %}
+            <select class="form-control" id="exampleFormControlSelect1" name="select">
+                <option value="default" disabled selected>Select a community to post your blog</option>                
+                {% for each in community_list %}
+                    <option value="{{each.id}}">{{each.community}}</option>
+                {% endfor %}                    
+            </select>            
             {{ form1|crispy }}
             {{ form2|crispy }}
             <button type="submit" value="submit" class="btn btn-light text-center">Submit</button>
         </form>
     </div>
-    <script src="{% static 'blogs/Newblog&profile.js' %}"></script>
+    <script src="{% static 'blogs/NewblogProfile.js' %}"></script>
     {% endblock content %}
 
 </body>

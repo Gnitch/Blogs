@@ -1,18 +1,43 @@
+up_clicked = 'no';
+down_clicked = 'no';
+saved = 'no';
 function upvote(ele,secEle) {
-    document.getElementById(ele).className = "fas fa-thumbs-up green";
-    document.getElementById(secEle).className = "fas fa-thumbs-down white";
+    down_clicked = 'no'
+    if(up_clicked == 'no') {
+        up_clicked = 'yes';
+        document.getElementById(ele).className = "fas fa-thumbs-up green fa-2x";
+        document.getElementById(secEle).className = "fas fa-thumbs-down white fa-2x";        
+    }
+    else {
+        document.getElementById(ele).className = "fas fa-thumbs-up white fa-2x";   
+        up_clicked = 'no';
+    }
 }
 
 function downvote(ele,secEle) {
-        document.getElementById(ele).className = "fas fa-thumbs-down red";
-    document.getElementById(secEle).className = "fas fa-thumbs-up white";
+    up_clicked = 'no';
+    if(down_clicked == 'no') {
+        down_clicked = 'yes';
+        document.getElementById(ele).className = "fas fa-thumbs-down red fa-2x";
+        document.getElementById(secEle).className = "fas fa-thumbs-up white fa-2x";        
+    }
+    else {
+        down_clicked = 'no';
+        document.getElementById(ele).className = "fas fa-thumbs-down white fa-2x";
+    }
+
 }
 
 function save(ele) {
-    document.getElementById(ele).className = "fas fa-bookmark save";
+    if(saved == 'no'){
+        document.getElementById(ele).className = "fas fa-bookmark save fa-2x";
+        saved = 'yes';
+    }
+    else {
+        saved = 'no';
+        document.getElementById(ele).className = "fas fa-bookmark gray fa-2x";
+    }
 }
 
-document.getElementById('id_cover').className = "btn btn-secondary"
-document.getElementById('id_video').className = "btn btn-secondary"
 
 

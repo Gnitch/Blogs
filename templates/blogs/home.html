@@ -7,16 +7,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     {% block cssfile %}
-        <link rel="stylesheet" href="{% static 'blogs/home.css' %}">
+        <link rel="stylesheet" href="{% static 'blogs/homeMain.css' %}">
         <link href="https://fonts.googleapis.com/css2?family=Courgette&display=swap" rel="stylesheet">
-        <script src="{% static 'blogs/home.js' %}"></script>
     {% endblock %}
 </head>
 <body>
     {% block content %}
-    <div class="container">
-        <div class="row">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dignissimos et tempore accusamus aspernatur illum non?<br> <hr class="line"> <i class="fas fa-thumbs-up" onclick="upvote('1','2')"  id="1"></i>  <i class="fas fa-thumbs-down" onclick="downvote('2','1')" id="2" ></i>  <i class="fas fa-comments"></i>   <i class="fas fa-bookmark"  onclick="save('3')" id="3"></i>  </div>
+    <div class="container ">
+        <div class="dropdown text-right mb-3" >
+            <a class="btn  btn-outline-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Sort by
+            </a>
+          
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <a class="dropdown-item" href="#">Upvotes</a>
+              <a class="dropdown-item" href="#">Downvotes</a>
+              <a class="dropdown-item" href="#">Oldest</a>
+              <a class="dropdown-item" href="#">Newest</a>
+            </div>
+        </div>
+
+        {% if list %}
+            {% for each_blog, each_prof_obj, each_user,each_comm in list %}
+                <a href="{% url 'blogs:blogPost' each_blog.id %}"> 
+                    <div class="row">
+                        <p class="username"><img src="{{ each_prof_obj.cover.url }}" class="rounded-circle profile_img" width="100" height="100" alt=""> {{each_user.username}}</p>   
+                        <p class="community text-info">C'{{each_comm.community}}'</p>
+                        <h2 style="color: white;margin-bottom: 20px;"> {{each_blog.title}} </h2> 
+                        <p style="color: gray;text-align: right;font-size: 20px; width: 100%; margin-bottom: 0px;">...Select for more info</p>   
+                    </div>
+                </a>
+            {% endfor %}
+        {% else %}
+            <h2 style="color: white;text-align: center;">No Blogs Available</h2>
+        {% endif %}
     </div>
+    
     {% endblock content %}
 </body>
 </html>

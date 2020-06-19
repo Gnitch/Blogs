@@ -6,6 +6,15 @@ h1 {
     margin: 10px;
 }
 
+select {
+    margin-bottom: 20px;
+    background-color: black !important;
+    color: lightgray !important;
+    border: none !important;
+    border-bottom: 1px solid white !important;
+    border-radius: 0% !important;
+}
+
 .container {
     background-color: 	black;
     color: #F8F8F8;
@@ -45,8 +54,17 @@ textarea {
     border-radius: 0%;
 }
 
-#hint_id_body {
-    font-size: 15px;
+::placeholder {
+    color: lightgray !important;
+}
+
+#id_body {
+    border: 1px solid white !important;
+}
+
+#hint_id_video {
+    font-size: 16px;
+    color: grey;
 }
 
 label {

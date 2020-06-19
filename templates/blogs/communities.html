@@ -1,0 +1,44 @@
+{% extends 'blogs/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact</title>
+    {% block cssfile %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
+    {% endblock %}
+</head>
+<body>
+    {% block content %}
+        <div class="container text-center">
+            {% if create == True %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" style="width: 60%;" value="submit" class="btn btn-info text-center">Submit</button>
+                </form>
+            {% else %}  
+                <a href="{% url 'blogs:communityForm' %}"><button class="btn btn-info mb-3" style="width: 60%;">Create a community</button></a>
+                <form style="margin-bottom: 20px !important;" class="form-inline d-flex justify-content-center md-form form-sm mt-0" method="GET" action="{% url 'blogs:searchCommunity' %}">
+                    <i id="search-icon" class="fas fa-search text-info" aria-hidden="true"></i>
+                    <input id="user-input" class="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search for a community" aria-label="Search" name="q">
+                </form>
+                <div id="replaceable-content">
+                    {% include 'blogs/communitylist.html' %}
+                </div>
+            {% endif %}
+        </div>
+        <!-- <link rel="stylesheet" href="">     -->
+        <script src="{% static 'blogs/Community.js' %}"></script>
+    {% endblock content %}
+</body>
+</html>
+
+
+
+
+
+

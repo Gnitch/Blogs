@@ -173,3 +173,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = ' username@xvz.com '
 EMAIL_HOST_PASSWORD = ' your_eamil_client_password '
 
+
+

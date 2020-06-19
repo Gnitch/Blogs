@@ -8,25 +8,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Post</title>
     {% block cssfile %}
-        <link rel="stylesheet" href="{% static 'blogs/Blogpost.css' %}">
-        <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap" rel="stylesheet">
-    {% endblock %}
+        <link rel="stylesheet" href="{% static 'blogs/blogpost.css' %}">
+        <script src="{% static 'blogs/home.js' %}"></script>  
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
+      {% endblock %}
 </head>
 <body>
     {% block content %}
 
     <div class="container">
-
-            <div class="row">
-              <p class="username"><img src="{{ profile_obj.cover.url }}" class="rounded-circle profile_img" width="100" height="100" alt=""> {{user.username}} </p> 
-            </div>
+            <a href="{% url 'blogs:viewUser' user.id  %}" id="user_profile">
+              <div class="row">
+                <p class="username"><img src="{{ profile_obj.cover.url }}" class="rounded-circle profile_img" width="100" height="100" alt=""> {{user.username}}                    
+                  {% if owner == 'yes' %}
+                    <a href="{% url 'blogs:deleteBlog' blog_obj.id %}"> <i class="fas fa-trash fa-2.5x" style="float: right !important; color: red;"></i></a>
+                  {% endif %}
+                </p>   
+                <a href="{% url 'blogs:communityPosts' comm_obj.id %}" class="comm"><h1 class="text-info">C'{{comm_obj.community}}'</h1></a>                 
+              </div>
+            </a>
 
             <div class="row">
                 <p class="title"> {{blog_obj.title}} </p>
-                <p class="body "> {{blog_obj.body}} </p>   
+                <p class="body "> {{blog_obj.body}} </p> 
             </div>
 
             <div class="row"> 
+
               {% if first_image %}
               <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
                   <div class="carousel-inner">
@@ -59,7 +67,7 @@
                   <iframe width="420" height="345" src="https://www.youtube.com/embed/{{blog_obj.youtube_video_id}}"></iframe>
               </div>
             {% endif %}
-          </div>
+            </div>
 
             {% if blog_obj.video %}
             <div class="row">
@@ -68,23 +76,107 @@
                   </video>
             </div>
             {% endif %}
-
+          <hr style="background-color: gray !important; margin: 20px;">    
         <div>
-           <i class="fas fa-thumbs-up fa-2x icon" style="margin-right: 10px;" onclick="upvote('1','2')"  id="1"></i> 
-            <i class="fas fa-thumbs-down fa-2x icon" onclick="downvote('2','1')" id="2" ></i> 
-            <i class="fas fa-bookmark fa-2x icon"  onclick="save('3')" id="3"></i> 
+            {% if up_but == True %}
+              <i class="fas green fa-thumbs-up fa-2x icon" data-blogid="{{blog_obj.id}}" style="margin-right: 10px;" onclick="upvote('1','2'); "  id="1">{{up}}</i> 
+            {% else %}
+              <i class="fas fa-thumbs-up fa-2x icon" data-blogid="{{blog_obj.id}}" style="margin-right: 10px;" onclick="upvote('1','2'); "  id="1">{{up}}</i> 
+            {% endif %}
+            
+            {% if down_but == True %}
+              <i class="fas red fa-thumbs-down fa-2x icon" data-blogid="{{blog_obj.id}}" onclick="downvote('2','1');" id="2" > {{down}}  </i> 
+            {% else %}
+              <i class="fas fa-thumbs-down fa-2x icon" data-blogid="{{blog_obj.id}}" onclick="downvote('2','1');" id="2" > {{down}}  </i>           
+            {% endif %}
+
+            {% if saved == True %}
+              <i class="fas white fa-bookmark fa-2x icon" data-blogid="{{blog_obj.id}}"  onclick="save('3');" id="3"></i> 
+            {% else %}
+              <i class ="fas fa-bookmark fa-2x icon" data-blogid="{{blog_obj.id}}"  onclick="save('3');" id="3"></i> 
+            {% endif %}
+            <h1 style="color: white ; text-align: center; width: 100%;">Comments</h1>
          </div>
 
-         <h1 style="color: white ; text-align: center; width: 100%;">Comments</h1>
-         <hr style="background-color: gray !important; margin: 20px;">
 
-         <div class="row">
+
             <div class="comments">
             </div>
-        </div>
+            <form method="POST" class="text-center">
+              {% csrf_token %}
+              <p> 
+              {{ form|crispy }}
+              <button class="btn btn-secondary"><i class="fas fa-paper-plane"></i>Post comment</button>
+              </p>
+            </form>
+                     
         
       </div>
+      <script>       
+      $(document).ready(function(){
+        $('#1').click(function(){
+          let blogPk = $(this).attr("data-blogid");
+          $.ajax(
+          {
+              type:"GET",
+              url: "{% url 'blogs:upVote' blog_obj.id %}",
+              data:{
+              },
+              success: function( data ) 
+              {
+                str = String(data)
+                a_ix = str.search('A')
+                up = str.substring(0,a_ix)
+                str = String(data)
+                down = str.substring(a_ix+1,str.length)
+                $('#1').html(up)
+                $('#2').html(down)
+              }
+          })
+        });
+      });    
 
+      $(document).ready(function(){
+        $('#2').click(function(){
+          let blogPk = $(this).attr("data-blogid");
+          $.ajax(
+          {
+              type:"GET",
+              url: "{% url 'blogs:downVote' blog_obj.id %}",
+              data:{
+              },
+              success: function( data ) 
+              {
+                str = String(data)
+                a_ix = str.search('A')
+                up = str.substring(0,a_ix)
+                str = String(data)
+                down = str.substring(a_ix+1,str.length)
+                $('#1').html(up)
+                $('#2').html(down)
+              }
+          })
+        });
+      });         
+
+      $(document).ready(function(){
+        $('#3').click(function(){
+          let blogPk = $(this).attr("data-blogid");
+          $.ajax(
+          {
+              type:"GET",
+              url: "{% url 'blogs:saved' blog_obj.id %}",
+              data:{
+              },
+              success: function( data ) 
+              {
+                alert(data)
+              }
+          })
+        });
+      });        
+      </script>
+      
     {% endblock content %}
 </body>
 </html>
