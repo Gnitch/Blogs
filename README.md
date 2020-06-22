@@ -1,5 +1,5 @@
 # Blog-Webapp
-# :exclamation::exclamation: Still Under-Development :exclamation::exclamation:
+## :exclamation::exclamation: Still Under-Development :exclamation::exclamation:
 ## Guide
 &nbsp; 1: Install Anaconda from : https://www.anaconda.com/products/individual <br />
 &nbsp; 2: Install environment from environment.yml file  <br />
@@ -22,6 +22,6 @@ python manage.py runserver
 ![](Screenshots/Home.png)
 ![](Screenshots/Community-list.png)
 ![](Screenshots/Sample-Post-images.png)
-![](Screenshots/Sample-Post-youtube.png)
-![](Screenshots/Sample-Post-comments.png)
+![](Screenshots/Sample-post-youtube.png)
+![](Screenshots/Sample-post-comments.png)
 
