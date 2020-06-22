@@ -1,5 +1,10 @@
 # Blogs
 ## :exclamation::exclamation: Still Under-Development :exclamation::exclamation:
+## Features 
+* Dynamic
+* Google sign in
+* Use of Ajax
+* Use of Pagination
 ## Guide
 &nbsp; 1: Install Anaconda from : https://www.anaconda.com/products/individual <br />
 &nbsp; 2: Install environment from environment.yml file  <br />
