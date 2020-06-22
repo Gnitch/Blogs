@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from .models import Profile, Blog, UploadImages, Communities
+from .models import Profile, Blog, UploadImages, Communities, BlogComments
 
 class CommunityForm(forms.ModelForm):
     class Meta :
@@ -91,20 +91,20 @@ class UploadImagesForm(forms.ModelForm):
         super(UploadImagesForm, self).__init__(*args, **kwargs)
         self.fields['cover'].required=False
 
-# class BlogCommentsForm(forms.ModelForm) :
+class BlogCommentsForm(forms.ModelForm) :
 
-#     class Meta :
-#         model = BlogComments
-#         fields = ('comments',)
-#         widgets = {
-#             'comments':forms.TextInput(attrs={'class': 'form-comments','placeholder':'Enter Text'})
-#         }
-#         labels = {
-#             'comments' : (''),
-#         }
-#     def __init__(self, *args, **kwargs):
-#         super(BlogCommentsForm, self).__init__(*args, **kwargs)
-#         self.fields['comments'].required=True 
+    class Meta :
+        model = BlogComments
+        fields = ('comment',)
+        widgets = {
+            'comment':forms.TextInput(attrs={'class': 'form-comments','placeholder':'Enter Text'})
+        }
+        labels = {
+            'comment' : (''),
+        }
+    # def __init__(self, *args, **kwargs):
+    #     super(BlogCommentsForm, self).__init__(*args, **kwargs)
+    #     self.fields['comment'].required=True 
 
 
 

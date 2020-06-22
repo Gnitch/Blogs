@@ -6,11 +6,14 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
+from django.core.paginator import Paginator
+from datetime import date
 import os
 
 import SocialWebsite.settings as settings
 from .models import Profile, UploadImages, Blog, Communities, BlogComments, BlogUpvotes, BlogDownvotes, BlogSave
-from .forms import ProfileForm, UploadImagesForm, BlogForm, UserProfileForm, CommunityForm
+from .forms import ProfileForm, UploadImagesForm, BlogForm, UserProfileForm, CommunityForm, BlogCommentsForm
+
 
 @login_required
 def home(request):
@@ -25,10 +28,25 @@ def home(request):
             comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
 
         lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)        
+
     else :
         lst = None    
-    context = {'list':lst}
+        page_obj1 = None
+    context = {'list':lst,'page':'home','page_obj':page_obj1}
     return render(request,'blogs/home.html',context)
+
 
 @login_required
 def myBlogs(request):
@@ -43,9 +61,22 @@ def myBlogs(request):
             comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
 
         lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+        paginator_blog = Paginator(blog_obj,2)
+        paginator_prof = Paginator(prof_obj_list,2)
+        paginator_usr = Paginator(usr_list,2)
+        paginator_comm = Paginator(comm_obj_list,2)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
     else :
         lst = None
-    context = {'list':lst}    
+        page_obj1 = None
+    context = {'list':lst,'page':'my','page_obj':page_obj1}    
     return render(request,'blogs/home.html',context)
 
 @login_required
@@ -88,13 +119,6 @@ def newBlog(request):
                     form1_obj.usr_id = request.user.id
                     blog_obj = form1.save()
 
-                # blog_info_obj = BlogInfo(upvotes = 1, downvotes = 0, saved = 0, blog_id = blog_obj.id,usr_id=request.user.id)
-                # blog_info_obj.save()
-                # For form 2
-                # blog_comment_obj = BlogComments.objects.create(usr_id=request.user.id,blog_id=blog_obj.id)
-                # blog_comment_obj.save()
-                # blog_com_obj = get_object_or_404(blog_obj,blog_id=blog_obj.id)
-                print(blog_obj.id)
                 blog_upvote_obj = BlogUpvotes.objects.create(blog_id=blog_obj.id)
                 blog_upvote_obj.save()
                 blog_save_obj = BlogSave.objects.create(blog_id=blog_obj.id)
@@ -111,27 +135,7 @@ def newBlog(request):
                                 img_obj = UploadImages(cover=formfile,blog_id=blog_obj.pk)
                                 img_obj.save()
                     # Redirect to this particular blog
-
-                blog_obj = get_object_or_404(Blog,pk=blog_obj.id)
-                comm_obj = get_object_or_404(Communities,pk=blog_obj.community_id)
-                profile_obj = get_object_or_404(Profile,usr_id=blog_obj.usr_id)
-                user = get_object_or_404(User,pk=blog_obj.usr_id)
-                # blog_info_obj = BlogInfo.objects.get(blog_id = blog_pk) 
-                uploaded_images_lst = list(UploadImages.objects.filter(blog_id=blog_obj.id))
-                first_image = None
-                rem_images = None
-                if len(uploaded_images_lst) > 0 :
-                    first_image = uploaded_images_lst[0]
-                    if len(uploaded_images_lst) > 1 :
-                        rem_images = uploaded_images_lst[1:]
-
-                if int(blog_obj.usr_id) == int(request.user.id) :
-                    owner = 'yes'
-                else :
-                    owner = 'no'
-
-                context = {'comm_obj':comm_obj,'owner':owner,'blog_obj':blog_obj,'first_image':first_image,'rem_images':rem_images,'user':user,'profile_obj':profile_obj}
-                return render(request,'blogs/BlogPost.html',context)
+                return redirect('blogs:blogPost', blog_pk=blog_obj.id)
 
                 # blogPost(request,blog_obj.id)
     
@@ -154,7 +158,24 @@ def getYoutubeId(link):
 
 @login_required
 def blogPost(request, blog_pk):
+    if request.method == 'POST':
+        form = BlogCommentsForm(request.POST)
+        if form.is_valid():
+            form_obj = form.save(commit=False)
+            form_obj.usr_id = request.user.id
+            form_obj.blog_id = blog_pk
+            form_obj.save()
+
     blog_obj = get_object_or_404(Blog,pk=blog_pk)
+    if BlogComments.objects.filter(blog_id=blog_pk).exists():
+        comments = get_list_or_404(BlogComments,blog_id=blog_obj.id)
+    else :
+        comments = []
+    user_lst = list()
+    for each in comments :
+        user_lst.append(get_object_or_404(User,pk=each.usr_id))
+    comments_lst = zip(comments,user_lst)
+    
     comm_obj = get_object_or_404(Communities,pk=blog_obj.community_id)
     profile_obj = get_object_or_404(Profile,usr_id=blog_obj.usr_id)
     user = get_object_or_404(User,pk=blog_obj.usr_id)
@@ -187,36 +208,28 @@ def blogPost(request, blog_pk):
     if request.user in down_obj.users.all():
         down_but = True
 
-    context = {'down_but':down_but,'up_but':up_but,'saved':saved,'up':up_obj.users.count(),'down':down_obj.users.count(),'comm_obj':comm_obj,'owner':owner,'blog_obj':blog_obj,'first_image':first_image,'rem_images':rem_images,'user':user,'profile_obj':profile_obj}
+    form = BlogCommentsForm()
+    context = {'comments_lst':comments_lst,'form':form,'down_but':down_but,'up_but':up_but,
+        'saved':saved,'up':up_obj.users.count(),'down':down_obj.users.count(),
+        'comm_obj':comm_obj,'owner':owner,'blog_obj':blog_obj,'first_image':first_image,
+        'rem_images':rem_images,'user':user,'profile_obj':profile_obj,
+    }
+    
     return render(request,'blogs/BlogPost.html',context)
 
 @login_required
 def deleteBlog(request,blog_pk):
-    blog_obj_temp =  Blog.objects.get(pk=blog_pk)
-    if blog_obj_temp.usr_id == request.user.id :
-        Blog.objects.filter(pk=blog_pk).delete()
-        if UploadImages.objects.filter(blog_id=blog_pk).exists() :
-            img_list = list(UploadImages.objects.filter(blog_id=blog_pk))
-            for each in img_list :
-                os.remove(os.path.join(settings.MEDIA_ROOT,str(each.cover.name)))
-            UploadImages.objects.filter(blog_id=blog_pk).delete()
-
-    blog_obj = list(Blog.objects.all())
-    comm_obj_list = list()
-    prof_obj_list = list()
-    usr_list = list()
-    if len(blog_obj) != 0 :
-        for each in blog_obj :
-            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
-            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
-            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
-
-        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
-    else :
-        lst = None    
-    context = {'list':lst}
-    return render(request,'blogs/home.html',context)
-
+    blog_obj_temp = get_object_or_404(Blog,pk=blog_pk)
+    if int(blog_obj_temp.usr_id) == int(request.user.id) :
+        if blog_obj_temp.usr_id == request.user.id :
+            Blog.objects.filter(pk=blog_pk).delete()
+            if UploadImages.objects.filter(blog_id=blog_pk).exists() :
+                img_list = list(UploadImages.objects.filter(blog_id=blog_pk))
+                for each in img_list :
+                    os.remove(os.path.join(settings.MEDIA_ROOT,str(each.cover.name)))
+                UploadImages.objects.filter(blog_id=blog_pk).delete()
+    return redirect('blogs:home')
+ 
 @login_required
 def logout(request):
     if request.user.is_authenticated :
@@ -224,27 +237,28 @@ def logout(request):
     return redirect('/')
 
 @login_required
-def Editprofile(request) :
-    if request.method == 'POST' :
-        form1 = ProfileForm(request.POST,request.FILES)
-        form2 = UserProfileForm(request.POST)
-        if form1.is_valid() or form2.is_valid():
-            if Profile.objects.filter(usr_id = request.user.id).exists() :
-                prof_obj = Profile.objects.get(usr_id = request.user.id)
-                if prof_obj.cover :
-                    os.remove(os.path.join(settings.MEDIA_ROOT,str(prof_obj.cover.name)))
-                prof_obj.delete()
+def Editprofile(request, user_id) :
+    if int(request.user.id) == int(user_id) :
+        if request.method == 'POST' :
+            form1 = ProfileForm(request.POST,request.FILES)
+            form2 = UserProfileForm(request.POST)
+            if form1.is_valid() or form2.is_valid():
+                if Profile.objects.filter(usr_id = request.user.id).exists() :
+                    prof_obj = Profile.objects.get(usr_id = request.user.id)
+                    if prof_obj.cover :
+                        os.remove(os.path.join(settings.MEDIA_ROOT,str(prof_obj.cover.name)))
+                    prof_obj.delete()
 
-            if form2.data['username'] : 
-                username = form2.data['username']
-                user = User.objects.get(pk = request.user.id)
-                user.username = username
-                user.save()
-            
-            obj = form1.save(commit=False)
-            obj.usr_id = request.user.id
-            form1.save()
-            return redirect('/blogs/profile/')
+                if form2.data['username'] : 
+                    username = form2.data['username']
+                    user = User.objects.get(pk = request.user.id)
+                    user.username = username
+                    user.save()
+                
+                obj = form1.save(commit=False)
+                obj.usr_id = request.user.id
+                form1.save()
+                return redirect('/blogs/profile/')
     
     form1 = ProfileForm()
     form2 = UserProfileForm()
@@ -272,7 +286,7 @@ def viewUser(request,usr_id) :
 
 
 @login_required
-def communityList(request) :
+def communityList(request) :   
     community_list = get_list_or_404(Communities)
     context = {'community_list':community_list}
     return render(request,'blogs/communities.html',context)
@@ -280,19 +294,36 @@ def communityList(request) :
 @login_required
 def communityPosts(request,community_id):
     blog_obj = list(Blog.objects.filter(community=community_id))
+    comm_obj_list = list()
     prof_obj_list = list()
     usr_list = list()
-
-    if blog_obj :
+    if len(blog_obj) != 0 :
         for each in blog_obj :
             prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
-            usr_list.append(get_object_or_404(User,pk=request.user.id))        
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
 
-        lst = zip(blog_obj,prof_obj_list,usr_list)
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
     else :
-        lst = None
-    context = {'list':lst}    
-    return render(request,'blogs/home.html',context)    
+        lst = None  
+        page_obj1 = None  
+        
+    context = {'list':lst,'community_id':community_id,'comm':True,'page_obj1':page_obj1}
+    return render(request,'blogs/home.html',context)
 
 @login_required
 def searchCommunity(request) :
@@ -341,7 +372,7 @@ def upVote(request,blog_pk):
             up_obj.users.add(request.user)
             if request.user in down_obj.users.all() :
                 down_obj.users.remove(request.user)    
-
+        print("Yes")
         s = str(up_obj.users.count())+'A'+str(down_obj.users.count())
         return HttpResponse(s)
 
@@ -435,23 +466,472 @@ def saved(request,blog_pk) :
     return render(request,'blogs/BlogPost.html',context)
 
 
+@login_required
+def sortUpvotes(request, page):
+    blog_obj = list() 
+    if page == 'my' :
+        up_obj_lst = list()
+        blog_obj_my = get_list_or_404(Blog,usr_id=request.user.id)
+        for each in blog_obj_my :
+            up_obj_lst.append(get_object_or_404(BlogUpvotes,blog_id=each.id))
+
+        up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+        for each in up_obj_lst :
+            blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))
+    
+    else :
+
+        up_obj_lst = list(get_list_or_404(BlogUpvotes))
+        up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+        for each in up_obj_lst :
+            blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))    
+    
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
 
 
+@login_required
+def sortDownvotes(request, page):
+    blog_obj = list() 
+    if page == 'my' :
+        up_obj_lst = list()
+        blog_obj_my = get_list_or_404(Blog,usr_id=request.user.id)
+        for each in blog_obj_my :
+            up_obj_lst.append(get_object_or_404(BlogDownvotes,blog_id=each.id))
+
+        up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+        for each in up_obj_lst :
+            blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))
+    else :
+
+        up_obj_lst = list(get_list_or_404(BlogDownvotes))
+        up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+        for each in up_obj_lst :
+            blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))    
+
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
 
 
+@login_required
+def savedBlogs(request):
+    blog_sav_lst = list(BlogSave.objects.filter(users=request.user))
+    blog_obj = list()
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_sav_lst :
+            blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))
+
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
 
 
+@login_required
+def sortNew(request, page):
+    if page == 'my' :
+        blog_obj = list(Blog.objects.filter(usr_id=request.user.id).order_by('date').order_by('date__hour', 'date__minute'))
+    else :
+        blog_obj = list(Blog.objects.order_by('date').order_by('date__hour', 'date__minute'))
+
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
+
+@login_required
+def sortOld(request, page):
+    if page == 'my' :
+        blog_obj = list(Blog.objects.filter(usr_id=request.user.id).order_by('-date').order_by('-date__hour', '-date__minute'))
+    else :
+        blog_obj = list(Blog.objects.order_by('-date').order_by('-date__hour', '-date__minute'))
+
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
+
+@login_required
+def trendingToday(request,page):
+    up_obj_lst = list()
+    blog_obj = list()
+    if page == 'my' :
+        blog_obj_my = list(Blog.objects.filter(usr_id=request.user.id).filter(date__date = date.today()))
+        if len(blog_obj_my) != 0 :
+            for each in blog_obj_my :
+                up_obj_lst.append(get_object_or_404(BlogUpvotes,blog_id=each.id))
+
+            up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+            for each in up_obj_lst :
+                blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))        
+        
+    else :
+        blog_obj_my = list(Blog.objects.filter(date__date = date.today()))
+        if len(blog_obj_my) != 0 :
+            for each in blog_obj_my :
+                up_obj_lst.append(get_object_or_404(BlogUpvotes,blog_id=each.id))
+
+            up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+            for each in up_obj_lst :
+                blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))   
 
 
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)    
+
+@login_required
+def sortUpvotesComm(request,community_id):
+    blog_obj = list(Blog.objects.filter(community=community_id))    
+    up_obj_lst = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+                up_obj_lst.append(get_object_or_404(BlogUpvotes,blog_id=each.id))
+
+        up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+        blog_obj = []
+        for each in up_obj_lst :
+                blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))
+
+        comm_obj_list = list()
+        prof_obj_list = list()
+        usr_list = list()
+    
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+        
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'community_id':community_id,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
+
+@login_required
+def sortDownvotesComm(request,community_id):
+    blog_obj = list(Blog.objects.filter(community=community_id))  
+    if len(blog_obj) != 0 :
+        up_obj_lst = list()
+        for each in blog_obj :
+                up_obj_lst.append(get_object_or_404(BlogDownvotes,blog_id=each.id))
+
+        up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+        blog_obj = []
+        for each in up_obj_lst :
+                blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))
+
+        comm_obj_list = list()
+        prof_obj_list = list()
+        usr_list = list()
+
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'community_id':community_id,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
 
 
+@login_required
+def sortNewComm(request,community_id):
+    blog_obj = list(Blog.objects.filter(community=community_id).order_by('date').order_by('date__hour', 'date__minute'))    
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
 
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
 
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
 
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
 
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'community_id':community_id,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
 
+@login_required
+def sortOldComm(request,community_id):
+    blog_obj = list(Blog.objects.filter(community=community_id).order_by('-date').order_by('-date__hour', '-date__minute'))    
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
 
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
 
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
 
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
 
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'community_id':community_id,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
 
+@login_required
+def trendingTodayComm(request,community_id):
+    up_obj_lst = list()
+    blog_obj = list()
+    blog_obj_my = list(Blog.objects.filter(community=community_id).filter(date__date = date.today()))
+    if len(blog_obj_my) != 0 :
+        for each in blog_obj_my :
+            up_obj_lst.append(get_object_or_404(BlogUpvotes,blog_id=each.id))
+
+        up_obj_lst.sort(key = lambda x : x.users.count(),reverse=True)
+        for each in up_obj_lst :
+            blog_obj.append(get_object_or_404(Blog,pk=each.blog_id))   
+
+    comm_obj_list = list()
+    prof_obj_list = list()
+    usr_list = list()
+    if len(blog_obj) != 0 :
+        for each in blog_obj :
+            prof_obj_list.append(get_object_or_404(Profile,usr_id=each.usr_id))
+            usr_list.append(get_object_or_404(User,pk=each.usr_id))        
+            comm_obj_list.append(get_object_or_404(Communities,pk=each.community_id))
+
+        lst = zip(blog_obj,prof_obj_list,usr_list,comm_obj_list)
+
+        paginator_blog = Paginator(blog_obj,20)
+        paginator_prof = Paginator(prof_obj_list,20)
+        paginator_usr = Paginator(usr_list,20)
+        paginator_comm = Paginator(comm_obj_list,20)
+
+        page_number = request.GET.get('page')
+        page_obj1 = paginator_blog.get_page(page_number)  
+        page_obj2 = paginator_prof.get_page(page_number)  
+        page_obj3 = paginator_usr.get_page(page_number)  
+        page_obj4 = paginator_comm.get_page(page_number)  
+        
+        lst = zip(page_obj1.object_list,page_obj2.object_list,page_obj3.object_list,page_obj4.object_list)
+
+    else :
+        lst = None    
+        page_obj1 = None
+    context = {'list':lst,'community_id':community_id,'page_obj':page_obj1}
+    return render(request,'blogs/home.html',context)
+
+@login_required
+def deleteComment(request, comment_pk, blog_pk) :
+    comment_obj = get_object_or_404(BlogComments,pk = comment_pk)
+    if int(comment_obj.usr_id) == int(request.user.id) :
+        comment_obj.delete()
+    return redirect('blogs:blogPost', blog_pk=blog_pk)

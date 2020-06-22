@@ -31,7 +31,7 @@
                     <img src="{{ profile_obj.cover.url }} "  alt="">
                 {% endif %}
                 {% if edit == True %}
-                    <p class="edit"><a href="{% url 'blogs:Editprofile' %}"> <i class="fas fa-edit"></i>Edit profile</a></p>
+                    <p class="edit"><a href="{% url 'blogs:Editprofile' profile_obj.usr_id  %}"> <i class="fas fa-edit"></i>Edit profile</a></p>
                 {% endif %}
                 <p class="p">Username : {{  user.username }} </p>
                 <p class="p">Email : {{ user.email }}</p>

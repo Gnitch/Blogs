@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
 from django.contrib.auth.models import User
-
+from datetime import datetime
 
 class Profile(models.Model):
     
@@ -20,6 +20,8 @@ class Blog(models.Model):
     video = models.FileField(upload_to='Blogs/Videos',null=True, verbose_name="") 
     usr = models.ForeignKey('auth.User',on_delete=models.CASCADE)
     community = models.ForeignKey(Communities, on_delete=models.SET_NULL, null=True) 
+    date = models.DateTimeField(default=datetime.now,blank=True)
+
     def get_total_likes(self):
         return self.likes.users.count()
 
@@ -34,7 +36,7 @@ class UploadImages(models.Model):
 class BlogComments(models.Model):
 
     usr = models.ForeignKey('auth.User',on_delete=models.CASCADE,)
-    comment = models.TextField(validators=[MinLengthValidator(250)],blank=True)
+    comment = models.TextField()
     blog = models.ForeignKey(Blog,on_delete=models.CASCADE,)
 
     def __str__(self):

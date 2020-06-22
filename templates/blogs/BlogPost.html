@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Post</title>
     {% block cssfile %}
-        <link rel="stylesheet" href="{% static 'blogs/blogpost.css' %}">
+        <link rel="stylesheet" href="{% static 'blogs/blogPost.css' %}">
         <script src="{% static 'blogs/home.js' %}"></script>  
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
       {% endblock %}
@@ -100,14 +100,25 @@
 
 
 
-            <div class="comments">
+            <div class="comments" style="padding: 10px;">
+              {% for each_comment, each_user in comments_lst %}                
+                {% if each_user.id == request.user.id %}
+                  <p style="padding-bottom: 20px;" >
+                    <h3 style="text-align: right !important;">'{{each_user}}' <a href="{% url 'blogs:deleteComment' each_comment.id blog_obj.id %}"> <i class="fas fa-trash fa-0.5x" style=" color: red; margin-left: 5px;"></i> </a>  </h3>
+                    <p style="font-size: 20px !important; text-align: end;">{{each_comment.comment}}</p>
+                  </p>                                                                                            
+                {% else %}
+                  <p style="padding-bottom: 20px;">
+                    <h3>'{{each_user}}'</h3>
+                    <h4 style="font-size: 20px !important;">{{each_comment.comment}}</h4>
+                  </p>
+                {% endif %}
+              {% endfor %}           
             </div>
-            <form method="POST" class="text-center">
+            <form method="POST" action="" class="text-center">
               {% csrf_token %}
-              <p> 
               {{ form|crispy }}
               <button class="btn btn-secondary"><i class="fas fa-paper-plane"></i>Post comment</button>
-              </p>
             </form>
                      
         

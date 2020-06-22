@@ -18,13 +18,34 @@
             <a class="btn  btn-outline-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Sort by
             </a>
-          
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <a class="dropdown-item" href="#">Upvotes</a>
-              <a class="dropdown-item" href="#">Downvotes</a>
-              <a class="dropdown-item" href="#">Oldest</a>
-              <a class="dropdown-item" href="#">Newest</a>
-            </div>
+            {% if comm == True %}
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="{% url 'blogs:sortUpvotesComm' community_id %}">Upvotes</a>
+                    <a class="dropdown-item" href="{% url 'blogs:sortDownvotesComm' community_id %}">Downvotes</a>
+                    <a class="dropdown-item" href="{% url 'blogs:sortOldComm' community_id %}">Oldest</a>
+                    <a class="dropdown-item" href="{% url 'blogs:sortNewComm' community_id %}">Newest</a>
+                    <a class="dropdown-item" href="{% url 'blogs:trendingTodayComm' community_id %}">Trending today</a>
+                </div>
+            {% else %}
+                {{community_id}}
+                {% if page == 'my' %}
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="{% url 'blogs:sortUpvotes' 'my' %}">Upvotes</a>
+                        <a class="dropdown-item" href="{% url 'blogs:sortDownvotes' 'my' %}">Downvotes</a>
+                        <a class="dropdown-item" href="{% url 'blogs:sortOld' 'my' %}">Oldest</a>
+                        <a class="dropdown-item" href="{% url 'blogs:sortNew' 'my' %}">Newest</a>
+                        <a class="dropdown-item" href="{% url 'blogs:trendingToday' 'my' %}">Trending today</a>
+                    </div>
+                {% else %}
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="{% url 'blogs:sortUpvotes' 'home' %}">Upvotes</a>
+                        <a class="dropdown-item" href="{% url 'blogs:sortDownvotes' 'home' %}">Downvotes</a>
+                        <a class="dropdown-item" href="{% url 'blogs:sortOld' 'home' %}">Oldest</a>
+                        <a class="dropdown-item" href="{% url 'blogs:sortNew' 'home' %}">Newest</a>
+                        <a class="dropdown-item" href="{% url 'blogs:trendingToday' 'home' %}">Trending today</a>
+                    </div>
+                {% endif %}
+            {% endif %}
         </div>
 
         {% if list %}
@@ -41,6 +62,43 @@
         {% else %}
             <h2 style="color: white;text-align: center;">No Blogs Available</h2>
         {% endif %}
+
+        <div class="pagination">
+            {% if page_obj %}
+            <nav aria-label="Page navigation example" style="margin: auto;">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}                                        
+                        <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+
+                    <span class="current">
+                        <li class="page-item active" aria-current="page">
+                            <a class="page-link" href="">{{ page_obj.number }} <span class="sr-only">(current)</span></a>
+                        </li>
+                    <!-- Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}. -->
+                    </span>
+
+                    {% if page_obj.has_next %}                                    
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last</a></li>
+                    {% endif %}
+
+                </ul>
+              </nav>
+              {% endif %}
+        </div>
+
+
     </div>
     
     {% endblock content %}
