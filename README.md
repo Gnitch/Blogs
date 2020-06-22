@@ -1,4 +1,4 @@
-# Blog-Webapp
+# Blogs
 ## :exclamation::exclamation: Still Under-Development :exclamation::exclamation:
 ## Guide
 &nbsp; 1: Install Anaconda from : https://www.anaconda.com/products/individual <br />
