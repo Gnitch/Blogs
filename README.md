@@ -1,5 +1,5 @@
 # Blogs
-## :exclamation::exclamation: Still Under-Development :exclamation::exclamation:
+## :exclamation::exclamation: Under-Development :exclamation::exclamation:
 ## Features 
 * Dynamic
 * Google sign in
